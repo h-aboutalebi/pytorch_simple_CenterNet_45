@@ -4,8 +4,9 @@ import pandas as pd
 import numpy as np
 from sklearn import preprocessing
 
-from parse_csv import parse_RSNA_csv
+from parse_csv import Parser
 
+csv_output = "/home/hossein/Desktop/dataset/RSNA_COMPETE/hossein_train.csv"
 images_patt = "/home/hossein/Desktop/dataset/RSNA_COMPETE/train_png"
 train_image_level_path = "/home/hossein/Desktop/dataset/RSNA_COMPETE/train_image_level.csv"  # contains bboxes
 train_study_level_path = "/home/hossein/Desktop/dataset/RSNA_COMPETE/train_study_level.csv"
@@ -20,11 +21,14 @@ eval_percent = 0.1
 #     ...
 # }
 
-train_image_df, eval_image_df = parse_RSNA_csv(train_image_level_path=train_image_level_path,
-                                               train_study_level_path=train_study_level_path, eval_percent=eval_percent)
+parser = Parser(img_pth=images_patt, load=True, load_path=csv_output)
+train_image_df, eval_image_df = parser.parse_RSNA_csv(train_image_level_path=train_image_level_path,
+                                                      train_study_level_path=train_study_level_path,
+                                                      eval_percent=eval_percent,
+                                                      csv_output=csv_output)
 
 # Create dataset
-dataset = fo.Dataset(name="coco_train_dataset")
+dataset = fo.Dataset(name="RSNA_train_dataset")
 
 # Persist the dataset on disk in order to
 # be able to load it in one line in the future
