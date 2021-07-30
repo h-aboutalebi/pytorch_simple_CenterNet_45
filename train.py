@@ -15,6 +15,7 @@ import torch.utils.data
 import torch.distributed as dist
 
 from datasets.coco import COCO, COCO_eval
+from datasets.rsna import RSNA_COCO,RSNACOCO_eval
 from datasets.pascal import PascalVOC, PascalVOC_eval
 
 from nets.hourglass import get_hourglass
@@ -33,7 +34,7 @@ parser.add_argument('--local_rank', type=int, default=0)
 parser.add_argument('--dist', action='store_true')
 
 parser.add_argument('--root_dir', type=str, default='./')
-parser.add_argument('--data_dir', type=str, default='./data')
+parser.add_argument('--data_dir', type=str, default='/home/hossein/Desktop/dataset/RSNA_COMPETE')
 parser.add_argument('--log_name', type=str, default='test')
 parser.add_argument('--pretrain_name', type=str, default='pretrain')
 
@@ -45,7 +46,7 @@ parser.add_argument('--split_ratio', type=float, default=1.0)
 
 parser.add_argument('--lr', type=float, default=5e-4)
 parser.add_argument('--lr_step', type=str, default='90,120')
-parser.add_argument('--batch_size', type=int, default=48)
+parser.add_argument('--batch_size', type=int, default=4)
 parser.add_argument('--num_epochs', type=int, default=140)
 
 parser.add_argument('--test_topk', type=int, default=100)
@@ -88,7 +89,7 @@ def main():
     cfg.device = torch.device('cuda')
 
   print('Setting up data...')
-  Dataset = COCO if cfg.dataset == 'coco' else PascalVOC
+  Dataset = RSNA_COCO if cfg.dataset == 'coco' else PascalVOC
   train_dataset = Dataset(cfg.data_dir, 'train', split_ratio=cfg.split_ratio, img_size=cfg.img_size)
   train_sampler = torch.utils.data.distributed.DistributedSampler(train_dataset,
                                                                   num_replicas=num_gpus,
@@ -102,7 +103,7 @@ def main():
                                              drop_last=True,
                                              sampler=train_sampler if cfg.dist else None)
 
-  Dataset_eval = COCO_eval if cfg.dataset == 'coco' else PascalVOC_eval
+  Dataset_eval = RSNACOCO_eval if cfg.dataset == 'coco' else PascalVOC_eval
   val_dataset = Dataset_eval(cfg.data_dir, 'val', test_scales=[1.], test_flip=False)
   val_loader = torch.utils.data.DataLoader(val_dataset, batch_size=1,
                                            shuffle=False, num_workers=1, pin_memory=True,

@@ -103,7 +103,7 @@ class kp_module(nn.Module):
 
 
 class exkp(nn.Module):
-  def __init__(self, n, nstack, dims, modules, cnv_dim=256, num_classes=80):
+  def __init__(self, n, nstack, dims, modules, cnv_dim=256, num_classes=5):
     super(exkp, self).__init__()
 
     self.nstack = nstack
